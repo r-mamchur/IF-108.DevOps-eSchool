@@ -25,7 +25,7 @@ npm install -g @angular/cli@7.0.7
 
 git clone https://github.com/yurkovskiy/final_project
 
-sed -i -e "s|https://fierce-shore-32592.herokuapp.com|http://192.168.56.13:8080|g" $HOME/final_project/src/app/services/token-interceptor.service.ts
+sed -i -e "s|https://fierce-shore-32592.herokuapp.com|http://192.168.56.21|g" $HOME/final_project/src/app/services/token-interceptor.service.ts
 
 cd $HOME/final_project
 yarn install --network-timeout 1000000

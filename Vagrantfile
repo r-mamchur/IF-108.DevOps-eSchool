@@ -1,19 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+num_of_be = 2
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
-#      ans.vm.provision "ansible_local" do |ansible|
-#      db.vm.network "public_network"
 Vagrant.configure("2") do |config| 
 
    config.vagrant.host = "windows"
 #       не тестити на наявність нового образу
-   config.vm.box_check_update = false
+   config.vm.box_check_update = true
    config.ssh.insert_key = false
-
 
    config.vm.define "my" do |my|
       my.vm.box = "centos/8"
@@ -36,16 +30,18 @@ Vagrant.configure("2") do |config|
 SHELL
    end
 
-   config.vm.define "be" do |be|
-      be.vm.box = "centos/7"
-      be.vm.hostname = 'be'
-      be.vm.network "private_network", ip: "192.168.56.13"
-      be.vm.provider "virtualbox" do |vb|
-         vb.memory = "2048"
+   (1..num_of_be).each do |i|
+      config.vm.define "be#{i}" do |be|
+         be.vm.box = "centos/7"
+         be.vm.hostname = "be#{i}"
+         be.vm.network "private_network", ip: "192.168.56.13#{i}"
+         be.vm.provider "virtualbox" do |vb|
+            vb.memory = "1024"
+         end
+         be.vm.provision "shell", inline: "chmod 0777 /vagrant/*.sh"
+         be.vm.provision "shell", path: "root_ssh.sh"	
+         be.vm.provision "shell", path: "be.sh"	
       end
-      be.vm.provision "shell", inline: "chmod 0777 /vagrant/*.sh"
-      be.vm.provision "shell", path: "root_ssh.sh"	
-      be.vm.provision "shell", path: "be.sh"	
    end
 
    config.vm.define "fe" do |fe|
@@ -57,7 +53,19 @@ SHELL
       end
       fe.vm.provision "shell", inline: "chmod 0777 /vagrant/*.sh"
       fe.vm.provision "shell", path: "root_ssh.sh"	
-      fe.vm.provision "shell", path: "fe5.sh"	
+      fe.vm.provision "shell", path: "fe.sh"	
+   end
+
+   config.vm.define "hp" do |hp|
+      hp.vm.box = "centos/7"
+      hp.vm.hostname = 'hp'
+      hp.vm.network "private_network", ip: "192.168.56.21"
+      hp.vm.provider "virtualbox" do |vb|
+         vb.memory = "1024"
+      end
+      hp.vm.provision "shell", inline: "chmod 0777 /vagrant/*.sh"
+      hp.vm.provision "shell", path: "root_ssh.sh"	
+      hp.vm.provision "shell", path: "hp_be.sh"	
    end
 
 end
